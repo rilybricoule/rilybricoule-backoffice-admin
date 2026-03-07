@@ -13,22 +13,25 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import EngineeringOutlinedIcon from "@mui/icons-material/EngineeringOutlined";
+
+
 import {
     CategoryIllustratedIcon,
     OffersIllustratedIcon,
 } from "./icons/IllustratedIcons";
 import { useState } from "react";
 import BgWorkshop from "../assets/openart.png";
-import DashboardIconImg from "../assets/sidebar-icons/dashboard.svg";
-import UsersIconImg from "../assets/sidebar-icons/users.svg";
-import ServicesIconImg from "../assets/sidebar-icons/services.svg";
+import DashboardIconImg from "../assets/sidebar-icons/dash.png";
+import UsersIconImg from  "../assets/sidebar-icons/users_new.png";
+import ServicesIconImg from "../assets/sidebar-icons/services.png";
 import ReservationsIconImg from "../assets/sidebar-icons/reservations.svg";
-import PaymentsIconImg from "../assets/sidebar-icons/payments.svg";
-import MarketingIconImg from "../assets/sidebar-icons/marketing.svg";
-import ContentIconImg from "../assets/sidebar-icons/content.svg";
-import SupportIconImg from "../assets/sidebar-icons/support.svg";
-import SettingsIconImg from "../assets/sidebar-icons/settings.svg";
+import PaymentsIconImg from "../assets/sidebar-icons/paiment.png";
+import MarketingIconImg from "../assets/sidebar-icons/marketing.png";
+import ContentIconImg from "../assets/sidebar-icons/content.png";
+import SupportIconImg from "../assets/sidebar-icons/support.png";
+import SettingsIconImg from "../assets/sidebar-icons/settings.png";
+import ClientsIconImg from "../assets/sidebar-icons/new_client.png";
+import PrestatairesIconImg from "../assets/sidebar-icons/workers.png";
 
 const drawerWidth = 240;
 const miniDrawerWidth = 76;
@@ -97,6 +100,7 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
             position: "relative",
             "& .MuiListItemIcon-root": {
                 minWidth: 34,
+                marginRight: 2,
                 transition: "all 0.2s ease"
             },
             "& .menu-icon-chip": {
@@ -159,6 +163,23 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
         };
     };
 
+    const childIconSx = (colorKey: string) => {
+        const c = iconColors[colorKey] ?? "#60a5fa";
+        return {
+            ...iconChipSx(colorKey),
+            minWidth: 34,
+            marginRight: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            "& img": {
+                width: 20,
+                height: 20,
+                objectFit: "contain",
+            },
+        };
+    };
     const iconChipSx = (colorKey: string) => {
         const c = iconColors[colorKey] ?? "#60a5fa";
         return {
@@ -234,8 +255,26 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
 
                 <Tooltip title="Utilisateurs" placement="right" disableHoverListener={open} slotProps={tooltipSlotProps}>
                     <ListItemButton selected={selected === "users"} onClick={() => setOpenUsers((v) => !v)} sx={rootRowSx(selected === "users", "users")}>
-                        <ListItemIcon className="menu-icon-chip" sx={iconChipSx("users")}>
-                            {iconImage(UsersIconImg, "Utilisateurs")}
+                        <ListItemIcon
+                            className="menu-icon-chip"
+                            sx={{
+                                ...iconChipSx("users"),
+                                width: 30,
+                                height: 30,
+                                minWidth: 30,
+                                borderRadius: "50%",
+                                overflow: "hidden",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                "& img": {
+                                    width: 20,
+                                    height: 20,
+                                    objectFit: "cover",
+                                },
+                            }}
+                        >
+                            <Box component="img" src={UsersIconImg} alt="Utilisateurs" />
                         </ListItemIcon>
                         {open && <ListItemText primary="Utilisateurs" primaryTypographyProps={{ fontWeight: 600 }} />}
                         {open &&
@@ -249,15 +288,19 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
                             onClick={() => onSelect("clients")}
                             sx={childRowSx(selected === "clients", 1, "clients")}
                         >
-                            <ListItemIcon>
-                                <ChevronRightIcon fontSize="small" sx={{ color: iconColors.clients }} />
+                            <ListItemIcon sx={childIconSx("clients")}>
+                                <Box component="img" src={ClientsIconImg} alt="Clients" />
                             </ListItemIcon>
                             <ListItemText primary="Clients" primaryTypographyProps={{ fontWeight: 500 }} />
                         </ListItemButton>
 
-                        <ListItemButton selected={selected === "providers"} onClick={() => setOpenProviders((v) => !v)} sx={childRowSx(selected === "providers", 1, "providers")}>
-                            <ListItemIcon>
-                                <EngineeringOutlinedIcon sx={{ fontSize: 18, color: iconColors.providers }} />
+                        <ListItemButton
+                            selected={selected === "providers"}
+                            onClick={() => setOpenProviders((v) => !v)}
+                            sx={childRowSx(selected === "providers", 1, "providers")}
+                        >
+                            <ListItemIcon sx={childIconSx("providers")}>
+                                <Box component="img" src={PrestatairesIconImg} alt="Prestataires" />
                             </ListItemIcon>
                             <ListItemText primary="Prestataires" primaryTypographyProps={{ fontWeight: 500 }} />
                             {openProviders ? <ExpandMoreIcon fontSize="small" sx={{ color: iconColors.providers }} /> : <ChevronRightIcon fontSize="small" sx={{ color: iconColors.providers }} />}
