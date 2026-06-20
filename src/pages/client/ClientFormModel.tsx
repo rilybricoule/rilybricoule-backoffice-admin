@@ -13,7 +13,7 @@ type ClientFormModalProps = {
     open: boolean;
     client: Client | null;
     onClose: () => void;
-    onSave: (client: Client) => void;
+    onSave: (client: Client) => void | Promise<void>;
 };
 
 export default function ClientFormModal({ open, client, onClose, onSave }: ClientFormModalProps) {
@@ -21,6 +21,8 @@ export default function ClientFormModal({ open, client, onClose, onSave }: Clien
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
+    const [ville, setVille] = useState("");
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (client) {
@@ -28,26 +30,37 @@ export default function ClientFormModal({ open, client, onClose, onSave }: Clien
             setLastName(client.lastName);
             setEmail(client.email);
             setPhone(client.phone || "");
+            setVille(client.ville || "");
         } else {
             setFirstName("");
             setLastName("");
             setEmail("");
             setPhone("");
+            setVille("");
         }
     }, [client, open]);
 
-    const handleSubmit = () => {
-        if (!firstName.trim() || !lastName.trim() || !email.trim()) return;
-        onSave({
-            id: client?.id ?? crypto.randomUUID(),
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
-            email: email.trim(),
-            phone: phone.trim() || undefined,
-            createdAt: client?.createdAt ?? new Date().toISOString().slice(0, 10),
-            isActive: client?.isActive ?? true,
-        });
-        onClose();
+    const handleSubmit = async () => {
+        if (!firstName.trim() || !lastName.trim() || !email.trim() || saving) return;
+
+        try {
+            setSaving(true);
+
+            await onSave({
+                id: client?.id ?? crypto.randomUUID(),
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                email: email.trim(),
+                phone: phone.trim() || undefined,
+                ville: ville.trim() || undefined,
+                createdAt: client?.createdAt ?? new Date().toISOString().slice(0, 10),
+                isActive: client?.isActive ?? true,
+            });
+
+            onClose();
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -67,6 +80,7 @@ export default function ClientFormModal({ open, client, onClose, onSave }: Clien
             <DialogTitle sx={{ color: "text.primary", fontWeight: 700 }}>
                 {client ? "Modifier le client" : "Créer un client"}
             </DialogTitle>
+
             <DialogContent>
                 <TextField
                     autoFocus
@@ -77,6 +91,7 @@ export default function ClientFormModal({ open, client, onClose, onSave }: Clien
                     onChange={(e) => setFirstName(e.target.value)}
                     sx={{ mb: 2, "& .MuiOutlinedInput-root": { bgcolor: "rgba(0,0,0,0.2)" } }}
                 />
+
                 <TextField
                     margin="dense"
                     label="Nom"
@@ -85,6 +100,7 @@ export default function ClientFormModal({ open, client, onClose, onSave }: Clien
                     onChange={(e) => setLastName(e.target.value)}
                     sx={{ mb: 2, "& .MuiOutlinedInput-root": { bgcolor: "rgba(0,0,0,0.2)" } }}
                 />
+
                 <TextField
                     margin="dense"
                     label="Email"
@@ -94,21 +110,38 @@ export default function ClientFormModal({ open, client, onClose, onSave }: Clien
                     onChange={(e) => setEmail(e.target.value)}
                     sx={{ mb: 2, "& .MuiOutlinedInput-root": { bgcolor: "rgba(0,0,0,0.2)" } }}
                 />
+
                 <TextField
                     margin="dense"
                     label="Téléphone"
                     fullWidth
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
+                    sx={{ mb: 2, "& .MuiOutlinedInput-root": { bgcolor: "rgba(0,0,0,0.2)" } }}
+                />
+
+                <TextField
+                    margin="dense"
+                    label="Ville"
+                    fullWidth
+                    value={ville}
+                    onChange={(e) => setVille(e.target.value)}
                     sx={{ "& .MuiOutlinedInput-root": { bgcolor: "rgba(0,0,0,0.2)" } }}
                 />
             </DialogContent>
+
             <DialogActions sx={{ px: 3, pb: 2 }}>
                 <Button onClick={onClose} sx={{ textTransform: "none" }}>
                     Annuler
                 </Button>
-                <Button variant="contained" onClick={handleSubmit} sx={{ textTransform: "none", fontWeight: 600 }}>
-                    Enregistrer
+
+                <Button
+                    variant="contained"
+                    onClick={handleSubmit}
+                    disabled={saving}
+                    sx={{ textTransform: "none", fontWeight: 600 }}
+                >
+                    {saving ? "Enregistrement..." : "Enregistrer"}
                 </Button>
             </DialogActions>
         </Dialog>

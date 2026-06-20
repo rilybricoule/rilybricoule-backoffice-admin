@@ -1,0 +1,82 @@
+import type { Notification, ReceivedNotification } from "./Notification";
+
+export const notificationsMock: Notification[] = [
+    {
+        id: "notif1",
+        title: "Nouvelle fonctionnalité disponible",
+        message: "Découvrez notre nouveau système de paiement en ligne sécurisé.",
+        target: "all_providers",
+        channel: "push",
+        status: "sent",
+        sentAt: "2025-03-10",
+        createdAt: "2025-03-10",
+    },
+    {
+        id: "notif2",
+        title: "Promotion Ramadan",
+        message: "Profitez de 20% de réduction sur tous les services ce Ramadan !",
+        target: "all_clients",
+        channel: "email",
+        status: "sent",
+        sentAt: "2025-03-15",
+        createdAt: "2025-03-15",
+    },
+    {
+        id: "notif3",
+        title: "Mise à jour plombiers",
+        message: "De nouvelles règles de facturation s'appliquent à votre catégorie.",
+        target: "category_providers",
+        category: "Plomberie",
+        channel: "push",
+        status: "sent",
+        sentAt: "2025-03-18",
+        createdAt: "2025-03-18",
+    },
+    {
+        id: "notif4",
+        title: "Campagne été",
+        message: "Préparez vos offres pour la saison estivale !",
+        target: "all_providers",
+        channel: "email",
+        status: "draft",
+        sentAt: "",
+        createdAt: "2025-03-20",
+    },
+];
+export const RECEIVED_MOCK: ReceivedNotification[] = [
+    {
+        id: "r1", title: "Nouveau prestataire en attente",
+        message: "Hassan B. vient de s'inscrire et attend une validation de son compte.",
+        type: "account", channel: "push",
+        triggeredBy: "Hassan B.", triggeredByRole: "provider", triggeredById: "p1",
+        read: false, sentAt: "2026-03-22",
+    },
+    {
+        id: "r2", title: "Litige ouvert",
+        message: "Sara B. a ouvert un litige concernant la prestation du 20 mars.",
+        type: "dispute", channel: "push",
+        triggeredBy: "Sara B.", triggeredByRole: "client", triggeredById: "c1",
+        read: false, sentAt: "2026-03-21",
+    },
+    {
+        id: "r3", title: "Paiement échoué",
+        message: "La transaction de 350 MAD pour la réservation #R-109 a échoué.",
+        type: "payment", channel: "email",
+        triggeredBy: "Système", triggeredByRole: "system", triggeredById: "sys",
+        read: true, sentAt: "2026-03-20",
+    },
+    {
+        id: "r4", title: "Signalement prestataire",
+        message: "Ahmed K. a été signalé 3 fois cette semaine par des clients.",
+        type: "review", channel: "push",
+        triggeredBy: "Système", triggeredByRole: "system", triggeredById: "sys",
+        read: false, sentAt: "2026-03-20",
+    },
+    {
+        id: "r5", title: "Ticket support reçu",
+        message: "Nadia R. a soumis une demande d'assistance concernant un remboursement.",
+        type: "system", channel: "email",
+        triggeredBy: "Nadia R.", triggeredByRole: "client", triggeredById: "c2",
+        read: true, sentAt: "2026-03-19",
+    },
+];

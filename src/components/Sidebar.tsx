@@ -1,4 +1,5 @@
 import {
+    Badge,
     Box,
     Collapse,
     Divider,
@@ -10,10 +11,13 @@ import {
     Tooltip,
     Typography
 } from "@mui/material";
+
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 
+
+import { useProviders }       from "../pages/context/ProviderContext";
+import { useNotifications }   from "../pages/context/NotificationsContext";
 
 import {
     CategoryIllustratedIcon,
@@ -21,7 +25,7 @@ import {
 } from "./icons/IllustratedIcons";
 import { useState } from "react";
 import BgWorkshop from "../assets/openart.png";
-import DashboardIconImg from "../assets/sidebar-icons/dash.png";
+import DashboardIconImg from "../assets/sidebar-icons/Dashboard.png";
 import UsersIconImg from  "../assets/sidebar-icons/users_new.png";
 import ServicesIconImg from "../assets/sidebar-icons/services.png";
 import ReservationsIconImg from "../assets/sidebar-icons/reservations.svg";
@@ -32,6 +36,16 @@ import SupportIconImg from "../assets/sidebar-icons/support.png";
 import SettingsIconImg from "../assets/sidebar-icons/settings.png";
 import ClientsIconImg from "../assets/sidebar-icons/new_client.png";
 import PrestatairesIconImg from "../assets/sidebar-icons/workers.png";
+import PromoIconImg         from "../assets/sidebar-icons/promo.png";
+import NotificationsIconImg from "../assets/sidebar-icons/Notifi.png";
+import secu from "../assets/sidebar-icons/security.png";
+import MarketingVue from "../assets/sidebar-icons/vueMarketing.png";
+
+import SystemUpdateRoundedIcon from "@mui/icons-material/SystemUpdateRounded";
+
+
+
+
 
 const drawerWidth = 240;
 const miniDrawerWidth = 76;
@@ -50,9 +64,20 @@ type SidebarProps = {
 };
 
 export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
-    const [openUsers, setOpenUsers] = useState(true);
-    const [openProviders, setOpenProviders] = useState(true);
-    const [openServices, setOpenServices] = useState(false);
+    const [openUsers, setOpenUsers] = useState(selected === "clients" || selected === "providers");
+    const [openServices, setOpenServices] = useState(selected === "categories" || selected === "offers");
+    const [openMarketing, setOpenMarketing] = useState(
+        selected === "marketing" || selected === "promo" || selected === "notifications"
+    );
+
+    const [openContent, setOpenContent] = useState(selected === "version");
+
+
+    const { providers }    = useProviders();
+    const { unreadCount }  = useNotifications();
+    const pendingCount     = providers.filter(p => p.status === "pending").length;
+
+
 
     const iconColors: Record<string, string> = {
         dashboard: "#2F7CC9",
@@ -68,6 +93,7 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
         providers: "#F08A2F",
         categories: "#F08A2F",
         offers: "#FFAA58",
+        promo: "#FFAA58",
     };
 
     const tooltipSlotProps = {
@@ -164,7 +190,6 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
     };
 
     const childIconSx = (colorKey: string) => {
-        const c = iconColors[colorKey] ?? "#60a5fa";
         return {
             ...iconChipSx(colorKey),
             minWidth: 34,
@@ -293,53 +318,18 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
                             </ListItemIcon>
                             <ListItemText primary="Clients" primaryTypographyProps={{ fontWeight: 500 }} />
                         </ListItemButton>
-
                         <ListItemButton
                             selected={selected === "providers"}
-                            onClick={() => setOpenProviders((v) => !v)}
+                            onClick={() => onSelect("providers")}
                             sx={childRowSx(selected === "providers", 1, "providers")}
                         >
                             <ListItemIcon sx={childIconSx("providers")}>
                                 <Box component="img" src={PrestatairesIconImg} alt="Prestataires" />
                             </ListItemIcon>
                             <ListItemText primary="Prestataires" primaryTypographyProps={{ fontWeight: 500 }} />
-                            {openProviders ? <ExpandMoreIcon fontSize="small" sx={{ color: iconColors.providers }} /> : <ChevronRightIcon fontSize="small" sx={{ color: iconColors.providers }} />}
                         </ListItemButton>
 
-                        <Collapse in={openProviders} timeout="auto" unmountOnExit>
-                            <List disablePadding>
-                                <ListItemButton
-                                    selected={selected === "providers_pending"}
-                                    onClick={() => onSelect("providers_pending")}
-                                    sx={childRowSx(selected === "providers_pending", 2, "providers")}
-                                >
-                                    <ListItemIcon>
-                                        <FiberManualRecordIcon sx={{ fontSize: 8, color: iconColors.providers }} />
-                                    </ListItemIcon>
-                                    <ListItemText primary="En attente (3)" primaryTypographyProps={{ fontWeight: 500 }} />
-                                </ListItemButton>
-                                <ListItemButton
-                                    selected={selected === "providers_approved"}
-                                    onClick={() => onSelect("providers_approved")}
-                                    sx={childRowSx(selected === "providers_approved", 2, "providers")}
-                                >
-                                    <ListItemIcon>
-                                        <FiberManualRecordIcon sx={{ fontSize: 8, color: iconColors.providers }} />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Approuvés" primaryTypographyProps={{ fontWeight: 500 }} />
-                                </ListItemButton>
-                                <ListItemButton
-                                    selected={selected === "providers_suspended"}
-                                    onClick={() => onSelect("providers_suspended")}
-                                    sx={childRowSx(selected === "providers_suspended", 2, "providers")}
-                                >
-                                    <ListItemIcon>
-                                        <FiberManualRecordIcon sx={{ fontSize: 8, color: iconColors.providers }} />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Suspendus" primaryTypographyProps={{ fontWeight: 500 }} />
-                                </ListItemButton>
-                            </List>
-                        </Collapse>
+
                     </List>
                 </Collapse>
 
@@ -373,7 +363,7 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
                             <ListItemIcon sx={{ color: "inherit" }}>
                                 <OffersIllustratedIcon size={18} />
                             </ListItemIcon>
-                            <ListItemText primary="Offres" primaryTypographyProps={{ fontWeight: 500 }} />
+                            <ListItemText primary="Offres des services" primaryTypographyProps={{ fontWeight: 500 }} />
                         </ListItemButton>
                     </List>
                 </Collapse>
@@ -397,22 +387,81 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
                 </Tooltip>
 
                 <Tooltip title="Marketing" placement="right" disableHoverListener={open} slotProps={tooltipSlotProps}>
-                    <ListItemButton selected={selected === "marketing"} onClick={() => onSelect("marketing")} sx={rootRowSx(selected === "marketing", "marketing")}>
+                    <ListItemButton
+                        selected={selected === "marketing"}
+                        onClick={() => setOpenMarketing(v => !v)}
+                        sx={rootRowSx(selected === "marketing", "marketing")}
+                    >
                         <ListItemIcon className="menu-icon-chip" sx={iconChipSx("marketing")}>
                             {iconImage(MarketingIconImg, "Marketing")}
                         </ListItemIcon>
                         {open && <ListItemText primary="Marketing" primaryTypographyProps={{ fontWeight: 600 }} />}
+                        {open && (openMarketing
+                                ? <ExpandMoreIcon fontSize="small" sx={{ color: iconColors.marketing }} />
+                                : <ChevronRightIcon fontSize="small" sx={{ color: iconColors.marketing }} />
+                        )}
                     </ListItemButton>
                 </Tooltip>
+                <Collapse in={open && openMarketing} timeout="auto" unmountOnExit>
+                    <List disablePadding>
+                        <ListItemButton
+                            selected={selected === "marketing"}
+                            onClick={() => onSelect("marketing")}
+                            sx={childRowSx(selected === "marketing", 1, "marketing")}
+                        >
+                            <ListItemIcon sx={childIconSx("marketing")}>
+                                <Box component="img" src={MarketingVue} alt="Vue marketing" />
+                            </ListItemIcon>
+                            <ListItemText primary="Vue marketing" primaryTypographyProps={{ fontWeight: 500 }} />
+                        </ListItemButton>
+
+                        <ListItemButton
+                            selected={selected === "promo"}
+                            onClick={() => onSelect("promo")}
+                            sx={childRowSx(selected === "promo", 1, "promo")}
+                        >
+                            <ListItemIcon sx={childIconSx("promo")}>
+                                <Box component="img" src={PromoIconImg} alt="Codes promo" />
+                            </ListItemIcon>
+                            <ListItemText primary="Codes promo" primaryTypographyProps={{ fontWeight: 500 }} />
+                        </ListItemButton>
+                        <ListItemButton
+                            selected={selected === "notifications"}
+                            onClick={() => onSelect("notifications")}
+                            sx={childRowSx(selected === "notifications", 1, "marketing")}
+                        >
+                            <ListItemIcon sx={childIconSx("marketing")}>
+                                <Box component="img" src={NotificationsIconImg} alt="Notifications" />
+                            </ListItemIcon>
+                            <ListItemText primary="Notifications" primaryTypographyProps={{ fontWeight: 500 }} />
+                        </ListItemButton>
+                    </List>
+                </Collapse>
 
                 <Tooltip title="Contenu" placement="right" disableHoverListener={open} slotProps={tooltipSlotProps}>
-                    <ListItemButton selected={selected === "content"} onClick={() => onSelect("content")} sx={rootRowSx(selected === "content", "content")}>
+                    <ListItemButton selected={selected === "content"} onClick={() => setOpenContent((v) => !v)} sx={rootRowSx(selected === "content", "content")}>
                         <ListItemIcon className="menu-icon-chip" sx={iconChipSx("content")}>
                             {iconImage(ContentIconImg, "Contenu")}
                         </ListItemIcon>
                         {open && <ListItemText primary="Contenu" primaryTypographyProps={{ fontWeight: 600 }} />}
+                        {open && (openContent ? <ExpandMoreIcon fontSize="small" sx={{ color: iconColors.content }} /> : <ChevronRightIcon fontSize="small" sx={{ color: iconColors.content }} />)}
                     </ListItemButton>
                 </Tooltip>
+                <Collapse in={open && openContent} timeout="auto" unmountOnExit>
+                    <List disablePadding>
+                        <ListItemButton
+                            selected={selected === "version"}
+                            onClick={() => onSelect("version")}
+                            sx={childRowSx(selected === "version", 1, "versions")}
+                        >
+                            <ListItemIcon sx={childIconSx("versions")}>
+                                <SystemUpdateRoundedIcon sx={{ fontSize: 18 }} />
+                            </ListItemIcon>
+                            <ListItemText primary="Versions de l'app" primaryTypographyProps={{ fontWeight: 500 }} />
+                        </ListItemButton>
+                    </List>
+                </Collapse>
+
 
                 <Tooltip title="Support" placement="right" disableHoverListener={open} slotProps={tooltipSlotProps}>
                     <ListItemButton selected={selected === "support"} onClick={() => onSelect("support")} sx={rootRowSx(selected === "support", "support")}>
@@ -422,7 +471,14 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
                         {open && <ListItemText primary="Support" primaryTypographyProps={{ fontWeight: 600 }} />}
                     </ListItemButton>
                 </Tooltip>
-
+                <Tooltip title="security" placement="right" disableHoverListener={open} slotProps={tooltipSlotProps}>
+                    <ListItemButton selected={selected === "security"} onClick={() => onSelect("security")} sx={rootRowSx(selected === "security", "security")}>
+                        <ListItemIcon className="menu-icon-chip" sx={iconChipSx("security")}>
+                            {iconImage(secu, "security")}
+                        </ListItemIcon>
+                        {open && <ListItemText primary="Securité" primaryTypographyProps={{ fontWeight: 600 }} />}
+                    </ListItemButton>
+                </Tooltip>
                 <Tooltip title="Paramètres" placement="right" disableHoverListener={open} slotProps={tooltipSlotProps}>
                     <ListItemButton selected={selected === "settings"} onClick={() => onSelect("settings")} sx={rootRowSx(selected === "settings", "settings")}>
                         <ListItemIcon className="menu-icon-chip" sx={iconChipSx("settings")}>
@@ -430,7 +486,8 @@ export default function Sidebar({ open, selected, onSelect }: SidebarProps) {
                         </ListItemIcon>
                         {open && <ListItemText primary="Paramètres" primaryTypographyProps={{ fontWeight: 600 }} />}
                     </ListItemButton>
-                </Tooltip>
+                </Tooltip>{open && <Divider sx={{ my: 1 }} />}
+
             </List>
         </Drawer>
     );

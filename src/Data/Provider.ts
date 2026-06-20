@@ -6,8 +6,9 @@ export type Provider = {
     firstName: string;
     lastName: string;
     phone?: string;
+    city?: string;
     createdAt: string;
-    status: ProviderStatus;
+    status?: ProviderStatus;
     avatar?: string;
     businessName?: string;
     documents: ProviderDocument[];
@@ -17,6 +18,9 @@ export type Provider = {
     rejectedAt?: string;
     approvedAt?: string;
     suspendedAt?: string;
+    // ── Performance fields ──
+    completedInterventions: number;
+    averageRating: number;  // 0–5
 };
 
 export type ProviderDocument = {
